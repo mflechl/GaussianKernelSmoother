@@ -8,6 +8,7 @@
 
 #include "TMath.h"
 #include "TH1D.h"
+#include "TGraphAsymmErrors.h"
 #include "TString.h"
 #include "TRandom3.h"
 #include "TF1.h"
@@ -20,11 +21,16 @@ class GaussianKernelSmoother
 
   public:
   GaussianKernelSmoother();
-  void  computeSmoothHisto();
-  void  createTestHisto();
+  void set_doErrors( int m_doErrors ){ this->doErrors = m_doErrors; }
+  void set_kernelDistance( TString m_kernelDistance ){ this->kernelDistance = m_kernelDistance; }
+  void getSmoothHisto();
+  void getContSmoothHisto();
+  void createTestHisto();
   void setWidth(const double w){ this->width = w; }
   TH1D* returnSmoothedHisto(){ return this->h_out; }
   TH1D* returnInputHisto(){ return this->h_in; }
+  TGraphAsymmErrors* returnSmoothedGraph(){ return this->g_out; }
+  TGraphAsymmErrors* returnSmoothedGraphErr(){ return this->g_out_err; }
   int setInputHisto(TString fname , TString hname ){ 
     TFile *f=new TFile( fname );
     this->h_in=(TH1D*) f->Get( hname );
@@ -33,15 +39,22 @@ class GaussianKernelSmoother
   }
 
   private:
-  double getSmoothedValue(double x);
-  //  TH1D* fluctuateHisto();
+  double getSmoothedValue(TH1D* m_h , const double x);
+  double rescaling( double val );
+  double invertRescaling( double val );
+  TH1D* fluctuateHisto();
+  double std_dev(std::vector<double> v );
 
   TH1D *h_in;
   TH1D *h_out;
+  TGraphAsymmErrors *g_out;
+  TGraphAsymmErrors *g_out_err;
   TH1D *weights;
 
   double width;
   int doErrors;
+  TString kernelDistance;
+
   TRandom3 rand;
   //        self.weights = None
   //	  self.rescaling = lambda x:x
