@@ -1,5 +1,6 @@
 
 void test(){
+  gStyle->SetOptStat(0);
 
   gROOT->ProcessLine(".L GaussianKernelSmoother.C+");
   GaussianKernelSmoother gsk;
@@ -21,23 +22,12 @@ void test(){
   gsk.set_doErrors(1);
   gsk.getContSmoothHisto();
   TGraphAsymmErrors *g=   gsk.returnSmoothedGraph();
-  TGraphAsymmErrors *gerr=gsk.returnSmoothedGraphErr();
+  //X  TGraphAsymmErrors *gerr=gsk.returnSmoothedGraphErr();
 
-  /*
-  TCanvas *c1=new TCanvas();
-  h->Draw("E");
-  h2->SetLineColor(kRed);
-  h2->Draw("HIST C same");
-  gPad->Update();
-  */
 
   TCanvas *c2=new TCanvas();
-  //  c2->Divide(2);
-  //  c2->cd(1);
-  //  c2->cd(2);
   h->Draw("E");     //to set the axis
-  gerr->Draw("same f1 C");
-  g->Draw("same C");
+  g->Draw("same LP");
   h->Draw("E same");
 
 }

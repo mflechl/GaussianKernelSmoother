@@ -102,24 +102,12 @@ void GaussianKernelSmoother::getContSmoothHisto(){
     ys[i] = this->getSmoothedValue( this->h_in , xs[i] );
   } 
 
-  g_out=new TGraphAsymmErrors( nbins , xs , ys , 0 , 0 , 0 , 0 );
-  g_out->SetLineColor(kRed);
-
-  //  double ysRnds[nbins]={0};
-
-  double xs_rev[nbins]  ={0};
-  double xs_dbl[2*nbins]={0};
-  double ys_rev[nbins]  ={0};
-  double ys_dbl[2*nbins]={0};
-
   if ( this->doErrors ){
     const int NTOYS=100;
     double ys_rnd[nbins]={0};
     double ys_err[nbins]={0};
     double ys_low[nbins]={0};
-    double ys_low_rev[nbins]={0};
     double ys_high[nbins]={0};
-    double ys_high_low[2*nbins]={0};
 
     std::vector<double> toys[nbins];
     for (int it=0; it<NTOYS; it++){
@@ -134,31 +122,17 @@ void GaussianKernelSmoother::getContSmoothHisto(){
       ys_err[i]  = this->std_dev( toys[i] );
       ys_low[i]  = ys[i]-ys_err[i];
       ys_high[i] = ys[i]+ys_err[i];
-
-      xs_rev[i]       = xs[nbins-1-i];
-      xs_dbl[i]       = xs[i];
-      xs_dbl[nbins+i] = xs_rev[i];
     }
-    for (int i=0; i<nbins; i++){
-      ys_low_rev[i]        = ys_low[nbins-1-i];
-      ys_high_low[i]       = ys_high[i];
-      ys_high_low[nbins+i] = ys_low_rev[i];
-    }
-    //    for (int i=0; i<nbins*2; i++) std::cout << i << "\t" << xs_dbl[i] << "\t" << ys_high_low[i] << std::endl;
 
-    g_out_err = new TGraphAsymmErrors( 2*nbins , xs_dbl , ys_high_low , 0 , 0 , 0 , 0 );
-    //    g_out_err->SetLineColor(kGray);
-    g_out_err->SetFillColor(kGray);
+    g_out=new TGraphAsymmErrors( nbins , xs , ys , 0 , 0 , ys_err , ys_err );
+    g_out->SetLineColor(38);
+    g_out->SetMarkerColor(kRed);
+    g_out->SetMarkerStyle(20);
+    g_out->SetMarkerSize(0.5);
+    g_out_err=new TGraphAsymmErrors( nbins , xs , ys_err );
   } else{
-    for (int i=0; i<nbins; i++){
-      xs_rev[i] = xs[nbins-1-i];
-      xs_dbl[i]       = xs[i];
-      xs_dbl[nbins+i] = xs_rev[i];
-      ys_rev[i]       = ys[nbins-1-i];
-      ys_dbl[i]       = ys[i];
-      ys_dbl[nbins+i] = ys_rev[i];
-    }
-    g_out_err = new TGraphAsymmErrors( 2*nbins , xs_dbl , ys_dbl , 0 , 0 , 0 , 0 );
+    g_out = new TGraphAsymmErrors( nbins , xs , ys , 0 , 0 , 0 , 0 );
+    g_out_err=new TGraphAsymmErrors( nbins , xs , 0 );
   }
 
 }
@@ -211,9 +185,10 @@ void GaussianKernelSmoother::createTestHisto(){
 
   //  std::cout << p1->Eval(-5) << "\t" << p1->Eval(0) << "\t" << p1->Eval(5) << std::endl;
 
-  //  this->h_in = new TH1D("","h_in",100,-5,5);
-  this->h_in = new TH1D("","h_in",100,1,11);
+  this->h_in = new TH1D("h_in","",100,1,11);
   this->h_in->FillRandom("p1",1000);
+  this->h_in->SetMarkerColor(kBlack);
+  this->h_in->SetLineColor(kBlack);
 
 }
 

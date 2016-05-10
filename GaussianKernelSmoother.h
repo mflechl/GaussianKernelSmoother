@@ -31,7 +31,7 @@ class GaussianKernelSmoother
   TH1D* returnSmoothedHisto(){ return this->h_out; }
   TH1D* returnInputHisto(){ return this->h_in; }
   TGraphAsymmErrors* returnSmoothedGraph(){ return this->g_out; }
-  TGraphAsymmErrors* returnSmoothedGraphErr(){ return this->g_out_err; }
+  TGraph* returnSmoothedGraphErr(){ return this->g_out_err; }
   int setInputHisto(TString fname , TString hname ){ 
     TFile *f=new TFile( fname );
     this->h_in=(TH1D*) f->Get( hname );
@@ -51,7 +51,7 @@ class GaussianKernelSmoother
   TH1D *h_out;
   TH1D *h_w;
   TGraphAsymmErrors *g_out;
-  TGraphAsymmErrors *g_out_err;
+  TGraph *g_out_err;
   TH1D *weights;
 
   double width;
