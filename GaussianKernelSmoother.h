@@ -22,6 +22,7 @@ class GaussianKernelSmoother
   public:
   GaussianKernelSmoother();
   void set_doErrors( int m_doErrors ){ this->doErrors = m_doErrors; }
+  void set_doWeights( int m_doWeights ){ this->doWeights = m_doWeights; if (m_doWeights) h_w=this->makeWeights( this->h_in ); }
   void set_kernelDistance( TString m_kernelDistance ){ this->kernelDistance = m_kernelDistance; }
   void getSmoothHisto();
   void getContSmoothHisto();
@@ -40,6 +41,7 @@ class GaussianKernelSmoother
 
   private:
   double getSmoothedValue(TH1D* m_h , const double x);
+  TH1D* makeWeights( TH1D* h);
   double rescaling( double val );
   double invertRescaling( double val );
   TH1D* fluctuateHisto();
@@ -47,12 +49,14 @@ class GaussianKernelSmoother
 
   TH1D *h_in;
   TH1D *h_out;
+  TH1D *h_w;
   TGraphAsymmErrors *g_out;
   TGraphAsymmErrors *g_out_err;
   TH1D *weights;
 
   double width;
   int doErrors;
+  int doWeights;
   TString kernelDistance;
 
   TRandom3 rand;

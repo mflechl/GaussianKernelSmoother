@@ -5,6 +5,7 @@ ClassImp(GaussianKernelSmoother)
 GaussianKernelSmoother::GaussianKernelSmoother(){
   this->width=1.;
   this->doErrors=0;
+  this->doWeights=0;
   this->kernelDistance="lin";
 }
 
@@ -37,7 +38,7 @@ double GaussianKernelSmoother::getSmoothedValue(TH1D* m_h , const double x){
     double dx = ( this->rescaling(x) - this->rescaling(xi) ) / this->width;
 
     double wi = TMath::Gaus(dx);
-    //    if (this->weights) wi *= self.weights.GetBinContent(b);
+    if (this->doWeights) wi *= this->h_w->GetBinContent(ib);
     sumw += wi;
     sumwy += wi*yi;
   }
@@ -102,6 +103,7 @@ void GaussianKernelSmoother::getContSmoothHisto(){
   } 
 
   g_out=new TGraphAsymmErrors( nbins , xs , ys , 0 , 0 , 0 , 0 );
+  g_out->SetLineColor(kRed);
 
   //  double ysRnds[nbins]={0};
 
@@ -145,8 +147,8 @@ void GaussianKernelSmoother::getContSmoothHisto(){
     //    for (int i=0; i<nbins*2; i++) std::cout << i << "\t" << xs_dbl[i] << "\t" << ys_high_low[i] << std::endl;
 
     g_out_err = new TGraphAsymmErrors( 2*nbins , xs_dbl , ys_high_low , 0 , 0 , 0 , 0 );
-
-
+    //    g_out_err->SetLineColor(kGray);
+    g_out_err->SetFillColor(kGray);
   } else{
     for (int i=0; i<nbins; i++){
       xs_rev[i] = xs[nbins-1-i];
@@ -160,6 +162,30 @@ void GaussianKernelSmoother::getContSmoothHisto(){
   }
 
 }
+
+TH1D* GaussianKernelSmoother::makeWeights( TH1D* h ){
+
+  TH1D *h_w = (TH1D*)h->Clone( (TString)h->GetName()+"_weights" );
+  h_w->SetDirectory(0);
+
+  double sum_weights=0;
+
+  for (int ib=1; ib<=h->GetNbinsX(); ib++){
+    double weight = 0.;
+    if ( fabs( h->GetBinError(ib) ) > 1e-8 ){
+      weight = 1./( pow(h->GetBinError(ib),2) );
+    }
+    h_w->SetBinContent( ib , weight );
+    h_w->SetBinError(   ib , 0      );
+    sum_weights+=weight;
+  }
+
+  h_w->Scale( 1/sum_weights );
+  //  std::cout << "XXX " << h_w->Integral(-1,-1) << std::endl;
+
+  return h_w;
+}
+
 
 double GaussianKernelSmoother::std_dev( std::vector<double> v ){
   unsigned size=v.size();
