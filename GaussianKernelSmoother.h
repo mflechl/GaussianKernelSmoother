@@ -38,6 +38,11 @@ class GaussianKernelSmoother
     if ( this->h_in ) return 0;
     else{ cerr << "ERROR: " << hname << " not found in file " << fname << endl; return 1; }
   }
+  int setInputHisto( TH1D* m_h ){ 
+    this->h_in=(TH1D*) m_h->Clone();
+    if ( this->h_in ) return 0;
+    else{ cerr << "ERROR: Could not assign histogram with address " << m_h << endl; return 1; }
+  }
 
   private:
   double getSmoothedValue(TH1D* m_h , const double x);
