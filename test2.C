@@ -18,6 +18,9 @@ void test2(){
   gsk.set_doWidthInBins(1);
   gsk.setWidth( 1 );
 
+  //  gsk.set_kernelDistance( "log" );
+  //  gsk.setWidth( 0.2 );
+
   //option 2: give smoothing scale parameter directly
   //  gsk.set_doWidthInBins(0);
   //  gsk.setWidth( 2* h->GetBinWidth(1) );
@@ -25,7 +28,6 @@ void test2(){
   gsk.getSmoothHisto();
   TH1D *h2=gsk.returnSmoothedHisto();
 
-  //  gsk.set_kernelDistance( "log" );
   gsk.set_doErrors(1);
   gsk.getContSmoothHisto();
   TGraphAsymmErrors *g=   gsk.returnSmoothedGraph();

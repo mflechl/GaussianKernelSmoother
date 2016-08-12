@@ -3,6 +3,8 @@
 ClassImp(GaussianKernelSmoother)
 
 GaussianKernelSmoother::GaussianKernelSmoother(){
+  this->doIgnoreZeroBins=1.;
+  this->doWidthInBins=0.;
   this->width=1.;
   this->doErrors=0;
   this->doWeights=0;
@@ -28,14 +30,42 @@ double GaussianKernelSmoother::getSmoothedValue(TH1D* m_h , const double x){
   double sumwy = 0. ;
   Int_t nbins = m_h->GetNbinsX();
 
-  int firstBinWithContent=0;
+  double m_width=this->width;
+
+  if ( this->doWidthInBins ){
+    m_width=0;
+    double wsum=0;
+
+    double bin_width=0;
+    //    bin_width=( m_h->GetBinLowEdge(nbins+1)-m_h->GetBinLowEdge(1) ) / nbins; //option 1: average bin width
+    for (int ib=1; ib<=nbins; ib++){
+      if ( bin_width<m_h->GetBinWidth(ib) ) bin_width=m_h->GetBinWidth(ib);  //option 2: max bin width
+      bin_width/=2;                                                          //option 2b: half max bin width
+    }
+
+    //    int m_bin=m_h->FindBin(x);
+
+    for (int ib=1; ib<=nbins; ib++){
+      double w=TMath::Gaus( fabs( x-m_h->GetBinCenter(ib) )/(bin_width) );
+      m_width+=m_h->GetBinWidth(ib)* w;
+      wsum+=w;
+    }
+    m_width/=wsum;
+    m_width*=this->width;
+    //    cout << x << " " << m_width << " " << wsum << " " << bin_width*nbins << " " <<bin_width << endl;
+  }
+
+
+  //int firstBinWithContent=0;
   for (int ib=1; ib<=nbins; ib++){
     double yi = m_h->GetBinContent(ib);
-    if ( !firstBinWithContent && fabs(yi)<1e-8 ) continue; else{ firstBinWithContent=ib; } //skip all bins until the first with non-zero content
+    double ei = m_h->GetBinError(ib);
+    //  if ( !firstBinWithContent && fabs(yi)<1e-8 ) continue; else{ firstBinWithContent=ib; } //skip all bins until the first with non-zero content
+    if ( fabs(yi)<1e-8 && ei<1e-8 ) continue;
     double xi = m_h->GetXaxis()->GetBinCenter(ib);
 
     //    double dx = ( x - xi ) / this->width;
-    double dx = ( this->rescaling(x) - this->rescaling(xi) ) / this->width;
+    double dx = ( this->rescaling(x) - this->rescaling(xi) ) / m_width;
 
     double wi = TMath::Gaus(dx);
     if (this->doWeights) wi *= this->h_w->GetBinContent(ib);
