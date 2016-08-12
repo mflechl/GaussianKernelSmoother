@@ -25,7 +25,10 @@ class GaussianKernelSmoother
   void set_doIgnoreZeroBins( int m_doIgnoreZeroBins ){ this->doIgnoreZeroBins = m_doIgnoreZeroBins; }
   void set_doWidthInBins( int m_doWidthInBins ){ this->doWidthInBins = m_doWidthInBins; }
   void set_doWeights( int m_doWeights ){ this->doWeights = m_doWeights; if (m_doWeights) h_w=this->makeWeights( this->h_in ); }
-  void set_kernelDistance( TString m_kernelDistance ){ this->kernelDistance = m_kernelDistance; }
+  void set_kernelDistance( TString m_kernelDistance ){ 
+    this->kernelDistance = m_kernelDistance; 
+    if (m_kernelDistance=="err") this->createGraphKDE( this->h_in );
+  }
   void getSmoothHisto();
   void getContSmoothHisto();
   void createTestHisto();
@@ -47,12 +50,13 @@ class GaussianKernelSmoother
   }
 
   private:
-  double getSmoothedValue(TH1D* m_h , const double x);
-  TH1D* makeWeights( TH1D* h);
+  double getSmoothedValue( TH1D* m_h , const double x );
+  TH1D* makeWeights( TH1D* h );
   double rescaling( double val );
   double invertRescaling( double val );
   TH1D* fluctuateHisto();
-  double std_dev(std::vector<double> v );
+  double std_dev( std::vector<double> v );
+  void createGraphKDE( TH1D* h );
 
   TH1D *h_in;
   TH1D *h_out;
@@ -60,6 +64,9 @@ class GaussianKernelSmoother
   TGraphAsymmErrors *g_out;
   TGraph *g_out_err;
   TH1D *weights;
+  TGraph *g_rescaling;
+  TGraph *g_inv_rescaling;
+
 
   double width;
   int doErrors;

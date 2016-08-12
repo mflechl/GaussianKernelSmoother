@@ -98,12 +98,14 @@ void GaussianKernelSmoother::getSmoothHisto(){
 double GaussianKernelSmoother::rescaling( double val ){
   if ( kernelDistance == "lin" ) return val;
   if ( kernelDistance == "log" ) return log(val);
+  if ( kernelDistance == "err" ) return this->g_rescaling->Eval(val);
   else return val;
 }
 
 double GaussianKernelSmoother::invertRescaling( double val ){
   if ( kernelDistance == "lin" ) return val;
   if ( kernelDistance == "log" ) return exp(val);
+  if ( kernelDistance == "err" ) return this->g_inv_rescaling->Eval(val);
   else return val;
 }
 
@@ -185,9 +187,27 @@ TH1D* GaussianKernelSmoother::makeWeights( TH1D* h ){
   }
 
   h_w->Scale( 1/sum_weights );
-  //  std::cout << "XXX " << h_w->Integral(-1,-1) << std::endl;
 
   return h_w;
+}
+
+void GaussianKernelSmoother::createGraphKDE( TH1D* m_h ){
+
+  int nbins=m_h->GetNbinsX();
+
+  double *x=new double[nbins];
+  double *y=new double[nbins];
+ 
+  double cumsum_y=0;
+  for (int ib=1; ib<=nbins; ib++){
+    x[ib-1]=m_h->GetBinCenter(ib);
+    if ( m_h->GetBinError(ib)>0 ) cumsum_y+=1/sqrt( m_h->GetBinError(ib) );
+    y[ib-1]=cumsum_y;
+  }
+  for (int ib=1; ib<=nbins; ib++){ y[ib-1]/=cumsum_y; }//normalize function
+
+  this->g_rescaling=new TGraph(nbins,x,y);
+  this->g_inv_rescaling=new TGraph(nbins,y,x);
 }
 
 
