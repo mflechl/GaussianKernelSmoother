@@ -21,6 +21,7 @@ class GaussianKernelSmoother
 
   public:
   GaussianKernelSmoother();
+  void setWidth(const double w){ this->width = w; }
   void set_doErrors( int m_doErrors ){ this->doErrors = m_doErrors; }
   void set_doIgnoreZeroBins( int m_doIgnoreZeroBins ){ this->doIgnoreZeroBins = m_doIgnoreZeroBins; }
   void set_doWidthInBins( int m_doWidthInBins ){ this->doWidthInBins = m_doWidthInBins; }
@@ -29,10 +30,14 @@ class GaussianKernelSmoother
     this->kernelDistance = m_kernelDistance; 
     if (m_kernelDistance=="err") this->createGraphKDE( this->h_in );
   }
+  void set_lastBinFrom( double m_lastBinFrom ){ 
+    this->lastBinFrom = m_lastBinFrom; 
+    this->doLastBinFrom = 1;
+    //    this->createGraphMax( this->h_in );
+  }
   void getSmoothHisto();
   void getContSmoothHisto();
   void createTestHisto();
-  void setWidth(const double w){ this->width = w; }
   TH1D* returnSmoothedHisto(){ return this->h_out; }
   TH1D* returnInputHisto(){ return this->h_in; }
   TGraphAsymmErrors* returnSmoothedGraph(){ return this->g_out; }
@@ -57,6 +62,7 @@ class GaussianKernelSmoother
   TH1D* fluctuateHisto();
   double std_dev( std::vector<double> v );
   void createGraphKDE( TH1D* h );
+  //  void createGraphMax( TH1D* h );
 
   TH1D *h_in;
   TH1D *h_out;
@@ -74,6 +80,8 @@ class GaussianKernelSmoother
   int doIgnoreZeroBins;
   int doWeights;
   TString kernelDistance;
+  double lastBinFrom;
+  int doLastBinFrom;
 
   TRandom3 rand;
   //        self.weights = None

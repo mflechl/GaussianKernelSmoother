@@ -9,6 +9,8 @@ GaussianKernelSmoother::GaussianKernelSmoother(){
   this->doErrors=0;
   this->doWeights=0;
   this->kernelDistance="lin";
+  this->lastBinFrom=-1;
+  this->doLastBinFrom=0;
 }
 
 TH1D* GaussianKernelSmoother::fluctuateHisto(){
@@ -24,7 +26,11 @@ TH1D* GaussianKernelSmoother::fluctuateHisto(){
   return h;
 }
 
-double GaussianKernelSmoother::getSmoothedValue(TH1D* m_h , const double x){
+double GaussianKernelSmoother::getSmoothedValue(TH1D* m_h , const double m_x){
+
+  double x;
+  if ( doLastBinFrom && m_x > lastBinFrom ) x=lastBinFrom;
+  else x=m_x;
 
   double sumw = 0.;
   double sumwy = 0. ;
@@ -96,6 +102,9 @@ void GaussianKernelSmoother::getSmoothHisto(){
 }
 
 double GaussianKernelSmoother::rescaling( double val ){
+
+  //  if ( doLastBinFrom && lastBinFrom > 0 ) return this->g_rescaling->Eval(val);
+
   if ( kernelDistance == "lin" ) return val;
   if ( kernelDistance == "log" ) return log(val);
   if ( kernelDistance == "err" ) return this->g_rescaling->Eval(val);
@@ -103,6 +112,9 @@ double GaussianKernelSmoother::rescaling( double val ){
 }
 
 double GaussianKernelSmoother::invertRescaling( double val ){
+
+  //  if ( doLastBinFrom && lastBinFrom > 0 ) return this->g_inv_rescaling->Eval(val);
+
   if ( kernelDistance == "lin" ) return val;
   if ( kernelDistance == "log" ) return exp(val);
   if ( kernelDistance == "err" ) return this->g_inv_rescaling->Eval(val);
@@ -190,6 +202,28 @@ TH1D* GaussianKernelSmoother::makeWeights( TH1D* h ){
 
   return h_w;
 }
+
+/*
+void GaussianKernelSmoother::createGraphMax( TH1D* m_h ){
+
+  int nbins=m_h->GetNbinsX();
+
+  double *x=new double[nbins];
+  double *y=new double[nbins];
+ 
+  for (int ib=1; ib<=nbins; ib++){
+    x[ib-1]=m_h->GetBinCenter(ib);
+    y[ib-1]=x[ib-1];
+    if ( doLastBinFrom && x[ib-1]>lastBinFrom ){ nbins=ib; break; }
+  }
+
+  std::cout << "nbins: " << nbins << std::endl;
+  for (int i=0; i<nbins; i++) std::cout << x[i] << " : " << y[i] << std::endl;
+
+  this->g_rescaling=new TGraph(nbins,x,y);
+  this->g_inv_rescaling=new TGraph(nbins,y,x);
+}
+*/
 
 void GaussianKernelSmoother::createGraphKDE( TH1D* m_h ){
 
