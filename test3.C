@@ -3,27 +3,27 @@ void test3(){
   gStyle->SetOptStat(0);
 
   gROOT->ProcessLine(".L GaussianKernelSmoother.C+");
-  GaussianKernelSmoother gsk;
+  GaussianKernelSmoother gks;
 
-  int ret=gsk.setInputHisto( "FF_corr_QCD_MCsum_noGen_nonclosure.root" , "nonclosure" );
-  TH1D *h=gsk.returnInputHisto();
+  int ret=gks.setInputHisto( "FF_corr_QCD_MCsum_noGen_nonclosure.root" , "nonclosure" );
+  TH1D *h=gks.returnInputHisto();
 
   if ( ret != 0 ) return;
-  gsk.set_doWeights(1);
-  gsk.set_doIgnoreZeroBins(1);
-  //  gsk.set_kernelDistance( "err" );
-  gsk.set_doWidthInBins(1);
-  gsk.set_doErrors(1);
-  gsk.set_lastBinFrom( 120 );
+  gks.set_doWeights(1);
+  gks.set_doIgnoreZeroBins(1);
+  //  gks.set_kernelDistance( "err" );
+  gks.set_doWidthInBins(1);
+  gks.set_doErrors(1);
+  gks.set_lastBinFrom( 120 );
   Double_t fitWidth=1.5;
-  gsk.setWidth(fitWidth);
+  gks.setWidth(fitWidth);
 
-  gsk.getSmoothHisto();
-  TH1D *h2=gsk.returnSmoothedHisto();
+  gks.getSmoothHisto();
+  TH1D *h2=gks.returnSmoothedHisto();
   //  h2->Write();
-  gsk.set_doErrors(1);
-  gsk.getContSmoothHisto();
-  TGraphAsymmErrors *g=   gsk.returnSmoothedGraph();
+  gks.set_doErrors(1);
+  gks.getContSmoothHisto();
+  TGraphAsymmErrors *g=   gks.returnSmoothedGraph();
   //  g->SetTitle("nonclosure"+sample);
   //  g->SetName("nonclosure"+sample);
   //  g->Write();
