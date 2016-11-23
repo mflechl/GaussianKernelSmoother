@@ -88,11 +88,11 @@ class GaussianKernelSmoother
   //	  self.rescaling = lambda x:x
   //        self.invertRescaling = self.rescaling
 
-  public:
+  //  public:
   //    virtual ~GaussianKernelSmoother();
 
-  public:
-    ClassDef(GaussianKernelSmoother,0)
+  //  public:
+  //    ClassDef(GaussianKernelSmoother,0)
 
 };
 

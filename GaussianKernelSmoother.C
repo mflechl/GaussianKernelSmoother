@@ -1,6 +1,6 @@
 #include "GaussianKernelSmoother.h"
 
-ClassImp(GaussianKernelSmoother)
+//ClassImp(GaussianKernelSmoother)
 
 GaussianKernelSmoother::GaussianKernelSmoother(){
   this->doIgnoreZeroBins=1.;

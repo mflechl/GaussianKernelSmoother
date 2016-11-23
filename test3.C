@@ -11,12 +11,15 @@ void test3(){
   if ( ret != 0 ) return;
   gks.set_doWeights(1);
   gks.set_doIgnoreZeroBins(1);
+
+  gks.setWidth(1.5); //fitWidth
+
   //  gks.set_kernelDistance( "err" );
+  //  gks.setWidth(0.005); //fitWidth
+
   gks.set_doWidthInBins(1);
   gks.set_doErrors(1);
   gks.set_lastBinFrom( 120 );
-  Double_t fitWidth=1.5;
-  gks.setWidth(fitWidth);
 
   gks.getSmoothHisto();
   TH1D *h2=gks.returnSmoothedHisto();
