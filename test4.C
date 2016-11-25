@@ -14,22 +14,31 @@ void test4(){
   //  gROOT->ProcessLine(".L GaussianKernelSmoother.C+");
   GaussianKernelSmoother gks;
 
-  int ret=gks.setInputHisto( "FF_corr_QCD_MCsum_noGen_nonclosure.root" , "nonclosure_fit" );
+  //  int ret=gks.setInputHisto( "FF_corr_TT_MC_noGen_nonclosure.root" , "nonclosure_fit" );
+  //  int ret=gks.setInputHisto( "FF_corr_QCD_MCsum_noGen_nonclosure.root" , "nonclosure_fit" );
+  //  int ret=gks.setInputHisto( "FF_corr_Wjets_MCsum_noGen_nonclosure.root" , "nonclosure_fit" );
+  int ret=gks.setInputHisto( "FF_corr_QCD_MCsum_noGen_OSSScorr.root" , "OSSS_corr" );
   TH1D *h=gks.returnInputHisto();
 
   if ( ret != 0 ) return;
 
   gks.set_doWeights(1);
   gks.set_doIgnoreZeroBins(0);
+
   //  gks.set_kernelDistance( "err" );
+  //  gks.setWidth(0.01); //fitWidth
+  //  gks.set_doWidthInBins(1);
+
+  gks.setWidth(2.0); //fitWidth
   gks.set_doWidthInBins(1);
+  gks.set_widthInBins_sf(1.115);
+  //  gks.setWidth(20); //fitWidth
+  //  gks.set_doWidthInBins(0);
+
   gks.set_doErrors(1);
 
   //if(mode & _QCD) 
-  gks.set_lastBinFrom(150);
-
-  gks.setWidth(2.0); //fitWidth
-  //  gks.setWidth(0.01); //fitWidth
+  //  gks.set_lastBinFrom(150);
 
   gks.getSmoothHisto();
   TH1D *h2=gks.returnSmoothedHisto();

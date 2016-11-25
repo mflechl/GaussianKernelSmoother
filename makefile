@@ -8,7 +8,7 @@ all: GaussianKernelSmoother.o test4
 GaussianKernelSmoother.o: GaussianKernelSmoother.C
 	$(CXX) -I$(INCDIR) -I$(ROOTINC) $(ROOTLIB) -c GaussianKernelSmoother.C
 
-test4: test4.C
+test4: GaussianKernelSmoother.o test4.C
 	$(CXX) -I$(INCDIR) -I$(ROOTINC) $(ROOTLIB) -o $@ GaussianKernelSmoother.o test4.C
 
 clean:

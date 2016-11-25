@@ -25,6 +25,7 @@ class GaussianKernelSmoother
   void set_doErrors( int m_doErrors ){ this->doErrors = m_doErrors; }
   void set_doIgnoreZeroBins( int m_doIgnoreZeroBins ){ this->doIgnoreZeroBins = m_doIgnoreZeroBins; }
   void set_doWidthInBins( int m_doWidthInBins ){ this->doWidthInBins = m_doWidthInBins; }
+  void set_widthInBins_sf(const double sf){ this->widthInBins_sf = sf; }
   void set_doWeights( int m_doWeights ){ this->doWeights = m_doWeights; if (m_doWeights) h_w=this->makeWeights( this->h_in ); }
   void set_kernelDistance( TString m_kernelDistance ){ 
     this->kernelDistance = m_kernelDistance; 
@@ -77,6 +78,7 @@ class GaussianKernelSmoother
   double width;
   int doErrors;
   int doWidthInBins;
+  double widthInBins_sf;
   int doIgnoreZeroBins;
   int doWeights;
   TString kernelDistance;
